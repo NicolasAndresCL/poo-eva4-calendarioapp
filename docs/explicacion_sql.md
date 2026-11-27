@@ -20,7 +20,7 @@ Las dos tablas son **independientes**: no hay clave foránea (así lo pide la pa
 
 ## 1. Cabecera (líneas 1 a 9)
 
-Son comentarios. En SQL, `--` (con un espacio después) comenta hasta el final de la línea. No ejecutan nada. Dejan escrito el motor probado (MariaDB 10.6, contenedor `poo-mysql`) y por qué importa la versión: los `CHECK` solo se **aplican** desde MySQL 8.0.16 (antes se aceptaban y se ignoraban).
+Son comentarios. En SQL, `--` (con un espacio después) comenta hasta el final de la línea. No ejecutan nada. Dejan escrito el motor probado (MariaDB 10.6, contenedor `calendario-mysql`) y por qué importa la versión: los `CHECK` solo se **aplican** desde MySQL 8.0.16 (antes se aceptaban y se ignoraban).
 
 ## 2. S1: crear y usar la base de datos (líneas 11 a 16) · A3
 

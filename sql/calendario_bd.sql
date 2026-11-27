@@ -3,7 +3,7 @@
 -- Base de datos: calendario_app
 -- Tema: agenda de eventos con acceso restringido
 -- Tablas: usuario (acceso) y evento (CRUD). Independientes, sin FK.
--- Motor probado: MariaDB 10.6 (contenedor poo-mysql). Compatible con
+-- Motor probado: MariaDB 10.6 (contenedor calendario-mysql). Compatible con
 --                MySQL 8.0.16+ (desde ahí se aplican los CHECK).
 -- Integrantes: Tais Montecinos · Rodolfo Prieto · Nicolás Cano
 -- =====================================================================

@@ -44,3 +44,23 @@ jobs:
 
       - name: Cargar SQL, compilar y correr las 24 pruebas
         run: bash scripts/ci.sh
+
+  imagen:
+    name: Build de la imagen de NetBeans (docker compose)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: docker-compose.yml es válido
+        run: docker compose config -q
+
+      # Construye exactamente lo que construye un compañero con
+      # "docker compose up -d --build": si la descarga de NetBeans o su
+      # checksum fallan, se ve aquí y no en el PC de alguien.
+      - name: Construir la imagen
+        run: docker compose build netbeans
+
+      - name: NetBeans y el JDK quedaron dentro de la imagen
+        run: |
+          docker run --rm --entrypoint /bin/sh calendario-netbeans:local -c \
+            'test -x /opt/netbeans/bin/netbeans && java -version 2>&1 | head -1'

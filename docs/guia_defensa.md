@@ -1,6 +1,6 @@
 # Guía de defensa oral — CalendarioApp (Parte B)
 
-**Evaluación 4 (20 %) · Fundamentos de POO (IEI-085) · Docente: Rosa Rao · Defensa: lunes 30 de noviembre de 2026**
+**Evaluación 4 (20 %) · Fundamentos de POO (IEI-085) · Profesor: Pablo · Defensa: viernes 4 de diciembre de 2026**
 Equipo: Tais Montecinos · Rodolfo Prieto · Nicolás Cano
 
 La defensa es **individual** (30 puntos, 6 por criterio). El orden y quién responde se definen al azar, así que **cualquiera de los tres debe poder explicar cualquier parte**. Esta guía cubre B1, B2, B4 y B5; B3 (aportes) se respalda con `docs/bitacora.md`.
@@ -17,14 +17,14 @@ La defensa es **individual** (30 puntos, 6 por criterio). El orden y quién resp
 
 ## 0. Antes de empezar (checklist de 2 minutos)
 
-1. MySQL arriba: `docker ps` debe mostrar `poo-mysql` y `poo-phpmyadmin` (y `poo-netbeans`). Si no están: `docker compose up -d` desde la carpeta del proyecto POO.
-2. Base cargada: `docker exec poo-mysql mariadb -uroot calendario_app -e "SELECT COUNT(*) FROM evento;"` debe devolver un número (el script deja 5 filas; las pruebas pueden haber agregado más).
+1. MySQL arriba: `docker ps` debe mostrar `calendario-mysql` y `calendario-phpmyadmin` (y `calendario-netbeans`). Si no están: `docker compose up -d` desde la carpeta del proyecto POO.
+2. Base cargada: `docker exec calendario-mysql mariadb -uroot calendario_app -e "SELECT COUNT(*) FROM evento;"` debe devolver un número (el script deja 5 filas; las pruebas pueden haber agregado más).
 3. phpMyAdmin abierto en http://localhost:8081 (base `calendario_app`, usuario `root`, sin clave).
 4. NetBeans con el proyecto `CalendarioApp` abierto; el driver `mysql-connector-j-26.10.0.jar` está en `CalendarioApp/lib/` y en las *Libraries* del proyecto.
 5. Si hace falta partir de cero: ejecutar `sql/calendario_bd.sql` completo (borra y recrea las tablas).
 
 > Comando de verificación sin phpMyAdmin (desde Git Bash, con `export MSYS_NO_PATHCONV=1` si el comando lleva rutas):
-> `docker exec poo-mysql mariadb -uroot calendario_app -e "SELECT ..."`
+> `docker exec calendario-mysql mariadb -uroot calendario_app -e "SELECT ..."`
 
 ---
 
@@ -88,7 +88,7 @@ Regla de oro: **hacer la operación en la app y enseguida mostrar el SELECT**. D
 - **Qué decir:** `DELETE FROM evento WHERE id_evento = ?`; la confirmación es un `JOptionPane.showConfirmDialog` en la ventana, antes de llamar al DAO.
 
 ### 1.9 Falla de conexión (V4)
-- **Preparación:** `docker stop poo-mysql` (hay que levantarlo después: `docker start poo-mysql`; ojo: `poo-phpmyadmin` comparte su red).
+- **Preparación:** `docker stop calendario-mysql` (hay que levantarlo después: `docker start calendario-mysql`; ojo: `calendario-phpmyadmin` comparte su red).
 - **En la app:** intentar login o guardar. Mensaje: «No fue posible conectar con la base de datos.» **La aplicación no se cierra.**
 - **Qué decir:** `DriverManager.getConnection` lanza `SQLException` con `SQLState` que empieza en `08`; el `catch` la convierte en mensaje y la ventana sigue viva.
 - **Importante:** avisar antes de detener MySQL y volver a subirlo al terminar la demo.
@@ -235,6 +235,8 @@ Lo que abres dentro de `try ( … )` se cierra automáticamente, incluso si hay 
 | **Viernes 27 nov** | Entender | Leer secciones 2 y 3. Abrir `Conexion`, `UsuarioDAO` y `EventoDAO` y explicar cada método en voz alta con la plantilla de 4 frases. Memorizar los ganchos 5.1 a 5.4. |
 | **Sábado 28 nov** | Recuperar y demostrar | Sin mirar: responder las autoevaluaciones de la sección 5. Hacer la demo completa (sección 1) dos veces, cronometrada, verificando cada paso con el SELECT. Preguntas 1 a 15 de la sección 4. |
 | **Domingo 29 nov** | Estrés y huecos | Preguntas 16 a 32 al azar (que otro integrante las lea). Simular el azar de la pauta: «explica `actualizar()`», «¿qué es un `ResultSet`?». Practicar el plan B si la app falla. Repasar ganchos 5.5 a 5.10. |
-| **Lunes 30 nov (mañana)** | Activar | 20 minutos: checklist de la sección 0 (contenedores arriba, base con datos, NetBeans abierto). Recitar C-P-R, V-I-R-R, I-L-B-A-E y POINT(lon, lat). Una pasada rápida por la tabla de la sección 3. No aprender nada nuevo. |
+| **Martes 1 dic** | Ensayo en equipo | Ensayo completo guiado por Nicolás: ver `docs/ensayo_martes.pdf` (presentación cronometrada, rondas B1–B5, modificaciones en vivo y simulacro). Anotar los huecos de cada uno. |
+| **Jueves 3 dic** | Cerrar huecos | Repasar solo lo que falló el martes. Repetir la demo completa sin mirar y las preguntas trampa de la defensa individual. |
+| **Viernes 4 dic (mañana)** | Activar | 20 minutos: checklist de la sección 0 (contenedores arriba, base con datos, NetBeans abierto). Recitar C-P-R, V-I-R-R, I-L-B-A-E y POINT(lon, lat). Una pasada rápida por la tabla de la sección 3. No aprender nada nuevo. |
 
 **Criterio de éxito:** poder explicar cualquier método sin leer, nombrar el archivo donde está y mostrar su efecto en MySQL.

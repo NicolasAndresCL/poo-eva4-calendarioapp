@@ -37,20 +37,27 @@ cd poo-eva4-calendarioapp
 
 ## 4. Levantar la base de datos
 
-### Opción A: Docker (recomendada)
+### Opción A: Docker (recomendada: trae NetBeans, la base y phpMyAdmin)
 
-PowerShell o Git Bash, en la raíz del repo:
+Si nunca usaste Docker, sigue primero [docs/guia_principiantes.md](docs/guia_principiantes.md)
+(instalación de Docker Desktop y Git, paso a paso).
+
+PowerShell o Git Bash, en la raíz del repo. **La primera vez** (construye la imagen de NetBeans):
 
 ```bash
-docker compose up -d
+docker compose up -d --build
 ```
 
-- `docker compose up` crea y arranca los servicios de `docker-compose.yml` (MariaDB 10.6 y phpMyAdmin).
+- `docker compose up` crea y arranca los tres servicios de `docker-compose.yml`: NetBeans 31 en el
+  navegador (http://localhost:3000), MariaDB 10.6 y phpMyAdmin (http://localhost:8081).
+- `--build` construye la imagen de NetBeans: la primera vez descarga ~1,5–2 GB y tarda 10–20 minutos.
+  Las siguientes veces se omite y arranca en segundos (`docker compose up -d`).
 - `-d` (*detached*) los deja corriendo en segundo plano y te devuelve la terminal.
-- La primera vez carga sola `sql/calendario_bd.sql`; las siguientes reutiliza los datos guardados.
-- **Salida esperada**: líneas `Container ... Started` o `Running`.
+- La primera vez la base carga sola `sql/calendario_bd.sql`; las siguientes reutiliza los datos guardados.
+- **Salida esperada**: líneas `Container calendario-... Started` (o `Running`).
 - **Si sale distinto**: `Cannot connect to the Docker daemon` significa que Docker Desktop no está abierto.
-  Si dice `port is already allocated` (3306 u 8081), otro programa (por ejemplo XAMPP) usa ese puerto: ciérralo.
+  Si dice `port is already allocated` (3000, 3306 u 8081), otro programa (XAMPP, otro MySQL) usa ese
+  puerto: ciérralo y repite.
 
 ```bash
 docker compose ps
@@ -60,7 +67,7 @@ docker compose ps
 - **Salida esperada**: la base con estado `running` (o `healthy`) y phpMyAdmin con `running`.
 - **Si sale distinto**: mira los registros con `docker compose logs mysql` y pégalos en el grupo.
 
-Para revisar los datos, abre http://localhost:8081 (phpMyAdmin) y busca la base `calendario_bd`.
+Para revisar los datos, abre http://localhost:8081 (phpMyAdmin) y busca la base `calendario_app`.
 
 ### Opción B: XAMPP
 
@@ -68,13 +75,15 @@ Para revisar los datos, abre http://localhost:8081 (phpMyAdmin) y busca la base 
 2. Abre http://localhost/phpmyadmin → pestaña **Importar**.
 3. Elige el archivo `sql/calendario_bd.sql` del repo y pulsa **Importar**.
 
-- **Salida esperada**: mensaje verde de importación exitosa y la base `calendario_bd` en el panel izquierdo.
+- **Salida esperada**: mensaje verde de importación exitosa y la base `calendario_app` en el panel izquierdo.
 - El script hace `DROP TABLE` primero: **borra** lo que hubiera en esas tablas y deja los datos de prueba.
 
 ## 5. Abrir el proyecto en NetBeans
 
-1. **File → Open Project** y elige la carpeta `CalendarioApp` dentro del repo (el icono es el de un
-   proyecto NetBeans).
+1. **Con Docker**: abre http://localhost:3000, menú **Applications → Development → Apache NetBeans**
+   (el icono del escritorio puede no responder al doble clic). Luego **File → Open Project** →
+   `/config/workspace/CalendarioApp`. **Con NetBeans instalado en Windows (XAMPP)**: File → Open Project
+   y elige la carpeta `CalendarioApp` dentro del repo.
 2. **F6** (Run Project): abre `VentanaLogin`. Entra con `admin` / `Admin2026`.
 3. **Alt+F6** (Test Project): corre las pruebas JUnit 4.
 

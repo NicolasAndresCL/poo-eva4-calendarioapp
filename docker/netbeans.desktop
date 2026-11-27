@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=Apache NetBeans
+Exec=/opt/netbeans/bin/netbeans --jdkhome /usr/lib/jvm/java-21-openjdk-amd64
+Icon=/opt/netbeans/nb/netbeans.png
+Terminal=false
+Categories=Development;IDE;

@@ -1,6 +1,6 @@
 EVALUACION 4 (20 %) - FUNDAMENTOS DE PROGRAMACION ORIENTADA A OBJETOS (IEI-085)
 Unidad III: Conexion a bases de datos con JDBC y MySQL
-Docente: Rosa Rao - Defensa: lunes 30 de noviembre de 2026
+Profesor: Pablo (pauta de la profesora Rosa Rao, jefa de carrera) - Defensa: viernes 4 de diciembre de 2026
 
 Integrantes:
   1. Tais Montecinos
