@@ -1,0 +1,51 @@
+    private void btnIngresarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnIngresarActionPerformed
+        String usuario = txtUsuario.getText().trim();
+        String clave = new String(txtClave.getPassword());
+        if (usuario.isEmpty() || clave.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Usuario o contraseña incorrectos.", "Acceso",
+                    JOptionPane.WARNING_MESSAGE);
+            txtUsuario.requestFocus();
+            return;
+        }
+        try {
+            Usuario u = usuarioDAO.validar(usuario, clave);
+            if (u == null) {
+                if (usuarioDAO.estaInactivo(usuario, clave)) {
+                    JOptionPane.showMessageDialog(this, "Usuario inactivo.", "Acceso",
+                            JOptionPane.WARNING_MESSAGE);
+                } else {
+                    JOptionPane.showMessageDialog(this, "Usuario o contraseña incorrectos.", "Acceso",
+                            JOptionPane.WARNING_MESSAGE);
+                }
+                txtClave.setText("");
+                txtUsuario.requestFocus();
+                return;
+            }
+            new VentanaEventos(u).setVisible(true);
+            this.dispose();
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, Conexion.mensajeError(e), "Error de base de datos",
+                    JOptionPane.ERROR_MESSAGE);
+        }
+    }//GEN-LAST:event_btnIngresarActionPerformed
+
+    private void btnSalirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSalirActionPerformed
+        System.exit(0);
+    }//GEN-LAST:event_btnSalirActionPerformed
+
+    /**
+     * @param args the command line arguments
+     */
+    public static void main(String args[]) {
+        try {
+            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        } catch (ReflectiveOperationException | javax.swing.UnsupportedLookAndFeelException ex) {
+        }
+
+        java.awt.EventQueue.invokeLater(() -> new VentanaLogin().setVisible(true));
+    }

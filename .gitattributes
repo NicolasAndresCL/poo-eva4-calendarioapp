@@ -1,0 +1,7 @@
+# Los scripts de shell siempre con LF (con CRLF, bash falla en Git Bash y en el runner)
+*.sh text eol=lf
+# Binarios: nunca tocar fines de línea
+*.jar binary
+*.png binary
+*.pdf binary
+*.pptx binary

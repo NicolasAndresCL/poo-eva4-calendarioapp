@@ -1,0 +1,33 @@
+# --- NetBeans / Ant: lo regenera el IDE al compilar ---
+CalendarioApp/build/
+CalendarioApp/dist/
+# Rutas y preferencias propias de cada PC (no se comparten)
+CalendarioApp/nbproject/private/
+nbproject/private/
+*.class
+
+# --- Entrega: el zip se arma con generar_entrega.py, no se versiona ---
+entrega/
+
+# --- Python (generador de ventanas y de la presentación) ---
+__pycache__/
+*.pyc
+
+# --- Office: archivos temporales y de bloqueo ---
+~$*
+~WRL*.tmp
+
+# --- Sistema operativo y editores ---
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+
+# --- Herramientas locales ---
+.playwright-mcp/
+.env
+.env.*
+
+# --- CI: jars de JUnit que descarga scripts/ci.sh ---
+.ci-libs/

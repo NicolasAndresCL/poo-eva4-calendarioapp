@@ -1,0 +1,189 @@
+    private Usuario usuario;
+    private EventoDAO eventoDAO;
+    // Id del evento cargado en el formulario (0 = ninguno); lo usan Actualizar y Eliminar
+    private int idSeleccionado;
+
+    public VentanaEventos(Usuario usuario) {
+        initComponents();
+        getContentPane().setBackground(new java.awt.Color(238, 242, 247));
+        this.usuario = usuario;
+        eventoDAO = new EventoDAO();
+        idSeleccionado = 0;
+        lblBienvenida.setText("Bienvenido/a " + usuario.getNombreCompleto() + " (" + usuario.getRol() + ")");
+        chkActivo.setSelected(true);
+        cboPrioridad.setSelectedIndex(1);
+        tblEventos.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseClicked(java.awt.event.MouseEvent e) {
+                tblEventosClicked();
+            }
+        });
+        this.setLocationRelativeTo(null);
+        cargarTabla();
+    }
+
+    private void mostrarError(String mensaje, javax.swing.JComponent campo) {
+        campo.requestFocus();
+        JOptionPane.showMessageDialog(this, mensaje, "Dato a corregir", JOptionPane.WARNING_MESSAGE);
+        campo.requestFocus();
+    }
+
+    private void mostrarErrorBD(SQLException e) {
+        JOptionPane.showMessageDialog(this, Conexion.mensajeError(e), "Error de base de datos",
+                JOptionPane.ERROR_MESSAGE);
+    }
+
+    // C2: vuelve a leer todos los eventos y llena la tabla
+    private void cargarTabla() {
+        DefaultTableModel modelo = (DefaultTableModel) tblEventos.getModel();
+        modelo.setRowCount(0);
+        try {
+            ArrayList<Evento> lista = eventoDAO.listar();
+            for (int i = 0; i < lista.size(); i++) {
+                Evento e = lista.get(i);
+                modelo.addRow(new Object[]{e.getIdEvento(), e.getCodigoEvento(), e.getTitulo(),
+                    e.getFechaEvento(), e.getHoraInicio(), e.getCategoria(), e.getPrioridad(),
+                    e.isActivo() ? "Sí" : "No", e.getLugar()});
+            }
+        } catch (SQLException e) {
+            mostrarErrorBD(e);
+        }
+    }
+
+    private void limpiarFormulario() {
+        idSeleccionado = 0;
+        txtCodigo.setText("");
+        txtTitulo.setText("");
+        txtLugar.setText("");
+        txtLatitud.setText("");
+        txtLongitud.setText("");
+        txtDetalle.setText("");
+        cboCategoria.setSelectedIndex(0);
+        txtFecha.setText("");
+        txtHoraInicio.setText("");
+        txtHoraFin.setText("");
+        spnDuracion.setValue(60);
+        cboPrioridad.setSelectedIndex(1);
+        chkActivo.setSelected(true);
+        tblEventos.clearSelection();
+        txtCodigo.requestFocus();
+    }
+
+    private void cargarFormulario(Evento e) {
+        idSeleccionado = e.getIdEvento();
+        txtCodigo.setText(e.getCodigoEvento());
+        txtTitulo.setText(e.getTitulo());
+        txtLugar.setText(e.getLugar() == null ? "" : e.getLugar());
+        txtLatitud.setText(e.getLatitud() == null ? "" : String.valueOf(e.getLatitud()));
+        txtLongitud.setText(e.getLongitud() == null ? "" : String.valueOf(e.getLongitud()));
+        txtDetalle.setText(e.getDetalle() == null ? "" : e.getDetalle());
+        cboCategoria.setSelectedItem(e.getCategoria());
+        txtFecha.setText(e.getFechaEvento().toString());
+        txtHoraInicio.setText(e.getHoraInicio().toString());
+        txtHoraFin.setText(e.getHoraFin() == null ? "" : e.getHoraFin().toString());
+        spnDuracion.setValue(e.getDuracionMinutos());
+        cboPrioridad.setSelectedItem(String.valueOf(e.getPrioridad()));
+        chkActivo.setSelected(e.isActivo());
+    }
+
+    // Valida el formulario; si todo esta bien devuelve el evento armado, si no avisa y devuelve null
+    private Evento leerFormulario() {
+        String codigo = txtCodigo.getText().trim();
+        if (codigo.isEmpty()) {
+            mostrarError("Debe ingresar el código del evento.", txtCodigo);
+            return null;
+        }
+        String titulo = txtTitulo.getText().trim();
+        if (titulo.isEmpty()) {
+            mostrarError("Debe ingresar el título del evento.", txtTitulo);
+            return null;
+        }
+
+        LocalDate fecha;
+        try {
+            fecha = LocalDate.parse(txtFecha.getText().trim());
+        } catch (DateTimeParseException ex) {
+            mostrarError("La fecha debe tener el formato yyyy-MM-dd (ej: 2026-12-15).", txtFecha);
+            return null;
+        }
+        LocalTime horaInicio;
+        try {
+            horaInicio = LocalTime.parse(txtHoraInicio.getText().trim());
+        } catch (DateTimeParseException ex) {
+            mostrarError("La hora de inicio debe tener el formato HH:mm (ej: 09:30).", txtHoraInicio);
+            return null;
+        }
+        LocalTime horaFin = null;
+        if (!txtHoraFin.getText().trim().isEmpty()) {
+            try {
+                horaFin = LocalTime.parse(txtHoraFin.getText().trim());
+            } catch (DateTimeParseException ex) {
+                mostrarError("La hora de fin debe tener el formato HH:mm (ej: 10:30) o quedar vacía.", txtHoraFin);
+                return null;
+            }
+        }
+
+        // Latitud y longitud: o vienen las dos o no viene ninguna
+        Double latitud = null;
+        Double longitud = null;
+        String textoLat = txtLatitud.getText().trim();
+        String textoLon = txtLongitud.getText().trim();
+        if (!textoLat.isEmpty() || !textoLon.isEmpty()) {
+            if (textoLat.isEmpty()) {
+                mostrarError("Si ingresa la longitud, también debe ingresar la latitud.", txtLatitud);
+                return null;
+            }
+            if (textoLon.isEmpty()) {
+                mostrarError("Si ingresa la latitud, también debe ingresar la longitud.", txtLongitud);
+                return null;
+            }
+            try {
+                latitud = Double.valueOf(textoLat);
+            } catch (NumberFormatException ex) {
+                mostrarError("La latitud debe ser un número (ej: -33.4489).", txtLatitud);
+                return null;
+            }
+            try {
+                longitud = Double.valueOf(textoLon);
+            } catch (NumberFormatException ex) {
+                mostrarError("La longitud debe ser un número (ej: -70.6693).", txtLongitud);
+                return null;
+            }
+        }
+
+        Evento e = new Evento();
+        e.setCodigoEvento(codigo);
+        e.setTitulo(titulo);
+        String lugar = txtLugar.getText().trim();
+        e.setLugar(lugar.isEmpty() ? null : lugar);
+        e.setLatitud(latitud);
+        e.setLongitud(longitud);
+        String detalle = txtDetalle.getText().trim();
+        e.setDetalle(detalle.isEmpty() ? null : detalle);
+        e.setCategoria((String) cboCategoria.getSelectedItem());
+        e.setFechaEvento(fecha);
+        e.setHoraInicio(horaInicio);
+        e.setHoraFin(horaFin);
+        e.setDuracionMinutos((Integer) spnDuracion.getValue());
+        e.setPrioridad(Integer.parseInt((String) cboPrioridad.getSelectedItem()));
+        e.setActivo(chkActivo.isSelected());
+        return e;
+    }
+
+    // Clic en una fila: se busca el evento por su codigo y se carga en el formulario
+    private void tblEventosClicked() {
+        int fila = tblEventos.getSelectedRow();
+        if (fila < 0) {
+            return;
+        }
+        String codigo = String.valueOf(tblEventos.getValueAt(fila, 1));
+        try {
+            Evento e = eventoDAO.buscar(codigo);
+            if (e != null) {
+                cargarFormulario(e);
+            }
+        } catch (SQLException ex) {
+            mostrarErrorBD(ex);
+        }
+    }
+

@@ -1,0 +1,36 @@
+EVALUACION 4 (20 %) - FUNDAMENTOS DE PROGRAMACION ORIENTADA A OBJETOS (IEI-085)
+Unidad III: Conexion a bases de datos con JDBC y MySQL
+Docente: Rosa Rao - Defensa: lunes 30 de noviembre de 2026
+
+Integrantes:
+  1. Tais Montecinos
+  2. Rodolfo Prieto
+  3. Nicolas Cano
+
+Tema: CalendarioApp - agenda de eventos con acceso restringido.
+Tablas: usuario (login) y evento (CRUD). La tabla evento usa una columna
+POINT (ubicacion: longitud/latitud) y una columna JSON (detalle).
+
+CONTENIDO
+  calendario_bd.sql   Script SQL (S1-S5): base, tablas y datos de prueba.
+  CalendarioApp/      Proyecto NetBeans (Java with Ant, JDK 21).
+                      Driver: CalendarioApp/lib/mysql-connector-j-26.10.0.jar
+
+COMO EJECUTAR
+  1. Ejecutar calendario_bd.sql en MySQL (Workbench, phpMyAdmin o consola).
+  2. Abrir CalendarioApp en NetBeans: File > Open Project.
+  3. Si MySQL tiene clave para root, cambiarla en src/conexion/Conexion.java
+     (constante CLAVE). La URL apunta a localhost:3306/calendario_app.
+  4. F6 para ejecutar. Alt+F6 para las 24 pruebas JUnit 4.
+
+USUARIOS DE PRUEBA
+  admin      / Admin2026   -> entra (ADMIN)
+  operador1  / Oper2026    -> entra (OPERADOR)
+  inactivo1  / Inac2026    -> "Usuario inactivo." (V2)
+
+PAQUETES
+  conexion  Conexion: URL, usuario y clave en constantes; conectar(), probarConexion().
+  modelo    Usuario y Evento.
+  dao       UsuarioDAO (validar, L1) y EventoDAO (insertar, listar, buscar,
+            actualizar, eliminar: C1-C5). PreparedStatement en todas las sentencias.
+  vista     VentanaLogin (main) y VentanaEventos (formulario + JTable).

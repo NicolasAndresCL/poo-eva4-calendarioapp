@@ -1,0 +1,9 @@
+    private UsuarioDAO usuarioDAO;
+
+    public VentanaLogin() {
+        initComponents();
+        getContentPane().setBackground(new java.awt.Color(238, 242, 247));
+        usuarioDAO = new UsuarioDAO();
+        this.setLocationRelativeTo(null);
+    }
+

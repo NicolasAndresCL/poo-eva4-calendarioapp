@@ -1,0 +1,92 @@
+    private void btnGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarActionPerformed
+        Evento e = leerFormulario();
+        if (e == null) {
+            return;
+        }
+        try {
+            eventoDAO.insertar(e);
+            idSeleccionado = e.getIdEvento();
+            cargarTabla();
+            JOptionPane.showMessageDialog(this, "Evento " + e.getCodigoEvento() + " guardado.");
+        } catch (SQLException ex) {
+            mostrarErrorBD(ex);
+        }
+    }//GEN-LAST:event_btnGuardarActionPerformed
+
+    private void btnBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBuscarActionPerformed
+        String codigo = txtCodigo.getText().trim();
+        if (codigo.isEmpty()) {
+            mostrarError("Ingrese el código del evento que desea buscar.", txtCodigo);
+            return;
+        }
+        try {
+            Evento e = eventoDAO.buscar(codigo);
+            if (e == null) {
+                JOptionPane.showMessageDialog(this, "No existe un evento con ese código.", "Buscar",
+                        JOptionPane.INFORMATION_MESSAGE);
+                return;
+            }
+            cargarFormulario(e);
+        } catch (SQLException ex) {
+            mostrarErrorBD(ex);
+        }
+    }//GEN-LAST:event_btnBuscarActionPerformed
+
+    private void btnActualizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnActualizarActionPerformed
+        if (idSeleccionado == 0) {
+            JOptionPane.showMessageDialog(this, "Primero busque o seleccione un evento de la tabla.",
+                    "Actualizar", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        Evento e = leerFormulario();
+        if (e == null) {
+            return;
+        }
+        e.setIdEvento(idSeleccionado);
+        try {
+            if (eventoDAO.actualizar(e)) {
+                cargarTabla();
+                JOptionPane.showMessageDialog(this, "Evento " + e.getCodigoEvento() + " actualizado.");
+            } else {
+                JOptionPane.showMessageDialog(this, "No se actualizó ningún evento.", "Actualizar",
+                        JOptionPane.WARNING_MESSAGE);
+            }
+        } catch (SQLException ex) {
+            mostrarErrorBD(ex);
+        }
+    }//GEN-LAST:event_btnActualizarActionPerformed
+
+    private void btnEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarActionPerformed
+        if (idSeleccionado == 0) {
+            JOptionPane.showMessageDialog(this, "Primero busque o seleccione un evento de la tabla.",
+                    "Eliminar", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        int respuesta = JOptionPane.showConfirmDialog(this,
+                "¿Está seguro de eliminar el evento " + txtCodigo.getText().trim() + "?",
+                "Confirmar eliminación", JOptionPane.YES_NO_OPTION);
+        if (respuesta != JOptionPane.YES_OPTION) {
+            return;
+        }
+        try {
+            if (eventoDAO.eliminar(idSeleccionado)) {
+                limpiarFormulario();
+                cargarTabla();
+                JOptionPane.showMessageDialog(this, "Evento eliminado.");
+            } else {
+                JOptionPane.showMessageDialog(this, "No se eliminó ningún evento.", "Eliminar",
+                        JOptionPane.WARNING_MESSAGE);
+            }
+        } catch (SQLException ex) {
+            mostrarErrorBD(ex);
+        }
+    }//GEN-LAST:event_btnEliminarActionPerformed
+
+    private void btnLimpiarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLimpiarActionPerformed
+        limpiarFormulario();
+    }//GEN-LAST:event_btnLimpiarActionPerformed
+
+    private void btnCerrarSesionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCerrarSesionActionPerformed
+        new VentanaLogin().setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_btnCerrarSesionActionPerformed

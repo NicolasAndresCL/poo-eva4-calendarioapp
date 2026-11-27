@@ -1,0 +1,49 @@
+# Base de datos de CalendarioApp para el equipo, sin instalar XAMPP.
+#
+# - mysql:      MariaDB 10.6 en localhost:3306, usuario root SIN clave (como XAMPP),
+#               que es lo que espera conexion/Conexion.java. La primera vez carga
+#               sola sql/calendario_bd.sql.
+# - phpmyadmin: panel web en http://localhost:8081 (entra directo como root).
+#
+# Entorno de clase: root sin clave solo es aceptable porque los puertos
+# escuchan únicamente en 127.0.0.1 (no se ven desde otros equipos de la red).
+services:
+  mysql:
+    image: mariadb:10.6
+    container_name: calendario-mysql
+    environment:
+      MARIADB_ALLOW_EMPTY_ROOT_PASSWORD: "1"
+      TZ: "America/Santiago"
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_general_ci
+    ports:
+      - "127.0.0.1:3306:3306"
+    volumes:
+      - calendario_data:/var/lib/mysql
+      # Solo corre con el volumen vacío (primer arranque).
+      - ./sql/calendario_bd.sql:/docker-entrypoint-initdb.d/01-calendario.sql:ro
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      start_period: 30s
+      retries: 5
+
+  phpmyadmin:
+    image: phpmyadmin:5.2
+    container_name: calendario-phpmyadmin
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      PMA_HOST: mysql
+      PMA_USER: root
+      PMA_PASSWORD: ""
+    volumes:
+      - ./docker/phpmyadmin-sin-clave.php:/etc/phpmyadmin/config.user.inc.php:ro
+    ports:
+      - "127.0.0.1:8081:80"
+
+volumes:
+  calendario_data:
