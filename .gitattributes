@@ -1,5 +1,7 @@
 # Los scripts de shell siempre con LF (con CRLF, bash falla en Git Bash y en el runner)
 *.sh text eol=lf
+# Archivos que se copian a la imagen Linux: siempre LF (con CRLF la línea Exec del menú termina en un retorno de carro)
+*.desktop text eol=lf
 # Binarios: nunca tocar fines de línea
 *.jar binary
 *.png binary
