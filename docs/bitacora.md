@@ -36,7 +36,7 @@ Integrantes: Tais Montecinos · Rodolfo Prieto · Nicolás Cano
 
 ## 3. Decisiones técnicas del equipo
 
-- **MariaDB 10.6 en contenedor** (`poo-mysql`, red compartida con NetBeans, phpMyAdmin en http://localhost:8081). El script es compatible con MySQL 8.0.16+ porque los `CHECK` se aplican desde esa versión.
+- **MariaDB 10.6 en contenedor** (`calendario-mysql`, red compartida con NetBeans, phpMyAdmin en http://localhost:8081). El script es compatible con MySQL 8.0.16+ porque los `CHECK` se aplican desde esa versión.
 - **Una sola clase `Conexion`** con URL, usuario y clave en constantes; los DAO no repiten datos de conexión (criterio A4).
 - **`PreparedStatement` en todas las sentencias**, sin concatenar datos: evita la inyección SQL (A6 a A10).
 - **Capas separadas** (`conexion`, `modelo`, `dao`, `vista`): la ventana nunca escribe SQL.
@@ -44,7 +44,7 @@ Integrantes: Tais Montecinos · Rodolfo Prieto · Nicolás Cano
 - **`clave` con `COLLATE utf8mb4_bin`** para que la contraseña distinga mayúsculas (con la collation `_ci` de la base, `ADMIN2026` entraba como `Admin2026`).
 - **Claves en texto plano** porque la pauta entrega el script de `usuario` así; en un sistema real irían con hash.
 
-## 4. Pendientes antes de la defensa (lunes 30 de noviembre)
+## 4. Pendientes antes de la defensa (viernes 4 de diciembre; ensayo el martes 1)
 
 - [ ] Cada integrante completa fechas y detalles de sus filas (B3).
 - [ ] Ensayar la demo completa de `docs/guia_defensa.md` (sección 1) al menos dos veces.

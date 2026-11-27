@@ -162,9 +162,9 @@ tb(sl, 0.9, 2.5, 11.5, 0.9, "Agenda de eventos con acceso restringido · JDBC + 
 rect(sl, 0.95, 3.5, 2.5, 0.06, WHITE)
 tb(sl, 0.9, 3.8, 11.5, 2.2, [
     "Evaluación 4 (20 %) · Fundamentos de Programación Orientada a Objetos (IEI-085)",
-    "Universidad Santo Tomás · Docente: Rosa Rao",
+    "Universidad Santo Tomás · Profesor: Pablo",
     "Integrantes: Tais Montecinos · Rodolfo Prieto · Nicolás Cano",
-    "Defensa: lunes 30 de noviembre de 2026"], size=22, color=WHITE)
+    "Defensa: viernes 4 de diciembre de 2026"], size=22, color=WHITE)
 sl.notes_slide.notes_text_frame.text = (
     "PRESENTA: Nicolás.\n\nSaludo y presentación del equipo (30 s). Decir el tema en una frase: "
     "'Una agenda de eventos donde solo entra un usuario registrado y activo, y todos los datos viven en MySQL, "

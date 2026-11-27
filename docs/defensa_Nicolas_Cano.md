@@ -1,6 +1,6 @@
 # Defensa individual – Nicolás Cano
 
-**Fundamentos de POO (IEI-085) · Evaluación 4 · CalendarioApp · Defensa: lunes 30 de noviembre de 2026**
+**Fundamentos de POO (IEI-085) · Evaluación 4 · CalendarioApp · Defensa: viernes 4 de diciembre de 2026**
 
 Esta guía cubre **mi parte**: `EventoDAO` (C1 a C5), V3, POINT y JSON desde Java, `VentanaEventos` y las pruebas JUnit. Complementa a `docs/guia_defensa.md` (guía del equipo) sin contradecirla.
 
@@ -479,15 +479,15 @@ Idea para explicarlo: **Java valida lo que se corrige en el campo (formatos, obl
 En **PowerShell** el `<` no existe; ahí se usa (desde la carpeta `Evaluacion4_Calendario`):
 
 ```powershell
-Get-Content -Encoding UTF8 .\sql\calendario_bd.sql | docker exec -i poo-mysql mariadb -u root -t
+Get-Content -Encoding UTF8 .\sql\calendario_bd.sql | docker exec -i calendario-mysql mariadb -u root -t
 ```
 
 En **Git Bash** (probado: deja los 5 eventos con tildes correctas):
 
 ```bash
-docker exec -i poo-mysql mariadb -uroot < sql/calendario_bd.sql
+docker exec -i calendario-mysql mariadb -uroot < sql/calendario_bd.sql
 ```
-`docker exec -i` ejecuta un comando dentro del contenedor `poo-mysql` y `-i` deja pasar por la entrada estándar el archivo que se redirige con `<`. `mariadb -uroot` es el cliente (usuario `root`, sin clave). El script borra y recrea la base `calendario_app`. No debe imprimir nada; si da error de ruta, revisar que se esté en la carpeta que contiene `sql/`.
+`docker exec -i` ejecuta un comando dentro del contenedor `calendario-mysql` y `-i` deja pasar por la entrada estándar el archivo que se redirige con `<`. `mariadb -uroot` es el cliente (usuario `root`, sin clave). El script borra y recrea la base `calendario_app`. No debe imprimir nada; si da error de ruta, revisar que se esté en la carpeta que contiene `sql/`.
 
 Dejar el login listo (`admin` / `Admin2026`) para llegar a `VentanaEventos`. Decir siempre en voz alta qué se espera ver antes de correr el comando.
 
@@ -497,7 +497,7 @@ Dejar el login listo (`admin` / `Admin2026`) para llegar a `VentanaEventos`. Dec
 
 **Verificar en MySQL:**
 ```bash
-docker exec poo-mysql mariadb -uroot calendario_app -e "SELECT id_evento, codigo_evento, titulo, ST_X(ubicacion) AS longitud, ST_Y(ubicacion) AS latitud, JSON_EXTRACT(detalle, '$.notas') AS notas FROM evento WHERE codigo_evento = 'EVT-0100';"
+docker exec calendario-mysql mariadb -uroot calendario_app -e "SELECT id_evento, codigo_evento, titulo, ST_X(ubicacion) AS longitud, ST_Y(ubicacion) AS latitud, JSON_EXTRACT(detalle, '$.notas') AS notas FROM evento WHERE codigo_evento = 'EVT-0100';"
 ```
 Pide al cliente ejecutar un `SELECT` (`-e`) sobre la base `calendario_app`. `ST_X`/`ST_Y` sacan longitud y latitud del `POINT`; `JSON_EXTRACT(detalle, '$.notas')` saca el campo `notas` del JSON.
 **Salida esperada:** una fila con `id_evento` 6, `EVT-0100`, `Demo defensa`, longitud `-70.6693`, latitud `-33.4489`, notas `"demo"` (con comillas). Si no aparece ninguna fila, la app no insertó: revisar el mensaje de error.
@@ -507,7 +507,7 @@ Pide al cliente ejecutar un `SELECT` (`-e`) sobre la base `calendario_app`. `ST_
 **En la app:** la tabla ya lista todos los eventos ordenados por fecha y hora (se recarga al abrir y tras cada operación).
 
 ```bash
-docker exec poo-mysql mariadb -uroot calendario_app -e "SELECT id_evento, codigo_evento, titulo, fecha_evento, hora_inicio FROM evento ORDER BY fecha_evento, hora_inicio;"
+docker exec calendario-mysql mariadb -uroot calendario_app -e "SELECT id_evento, codigo_evento, titulo, fecha_evento, hora_inicio FROM evento ORDER BY fecha_evento, hora_inicio;"
 ```
 Es la misma consulta que hace `listar()`. **Esperado:** 6 filas (EVT-0001 a EVT-0005 más EVT-0100), en el mismo orden que la `JTable`.
 
@@ -516,7 +516,7 @@ Es la misma consulta que hace `listar()`. **Esperado:** 6 filas (EVT-0001 a EVT-
 **En la app:** escribir `EVT-0002` en Código → **Buscar** (o clic en la fila). El formulario se llena con "Control médico". Para el caso negativo, buscar `NO-EXISTE` → "No existe un evento con ese código."
 
 ```bash
-docker exec poo-mysql mariadb -uroot calendario_app -e "SELECT id_evento, codigo_evento, titulo, lugar, categoria FROM evento WHERE codigo_evento = 'EVT-0002';"
+docker exec calendario-mysql mariadb -uroot calendario_app -e "SELECT id_evento, codigo_evento, titulo, lugar, categoria FROM evento WHERE codigo_evento = 'EVT-0002';"
 ```
 Equivale al `WHERE codigo_evento = ?` de `buscar`. **Esperado:** una fila con título "Control médico", lugar "CESFAM Centro", categoría `salud`. (Se evita `SELECT *` porque `ubicacion` sale como binario ilegible: por eso la app usa `ST_X`/`ST_Y`.)
 
@@ -525,7 +525,7 @@ Equivale al `WHERE codigo_evento = ?` de `buscar`. **Esperado:** una fila con t�
 **En la app:** buscar `EVT-0100`, cambiar el título a `Demo editada` y la prioridad a `3` → **Actualizar**. Sale "Evento EVT-0100 actualizado." y la fila cambia.
 
 ```bash
-docker exec poo-mysql mariadb -uroot calendario_app -e "SELECT id_evento, codigo_evento, titulo, prioridad FROM evento WHERE codigo_evento = 'EVT-0100';"
+docker exec calendario-mysql mariadb -uroot calendario_app -e "SELECT id_evento, codigo_evento, titulo, prioridad FROM evento WHERE codigo_evento = 'EVT-0100';"
 ```
 **Esperado:** `Demo editada` y prioridad `3`, con el **mismo** `id_evento` (6): se modificó, no se creó otra fila.
 
@@ -534,7 +534,7 @@ docker exec poo-mysql mariadb -uroot calendario_app -e "SELECT id_evento, codigo
 **En la app:** con `EVT-0100` cargado → **Eliminar** → responder **Sí** en "¿Está seguro de eliminar el evento EVT-0100?". Sale "Evento eliminado." y la fila desaparece. (Mostrar también que **No** cancela.)
 
 ```bash
-docker exec poo-mysql mariadb -uroot calendario_app -e "SELECT COUNT(*) AS cuantos FROM evento WHERE codigo_evento = 'EVT-0100';"
+docker exec calendario-mysql mariadb -uroot calendario_app -e "SELECT COUNT(*) AS cuantos FROM evento WHERE codigo_evento = 'EVT-0100';"
 ```
 **Esperado:** `cuantos = 0`. Si da 1, se respondió No o el borrado falló.
 
@@ -543,7 +543,7 @@ docker exec poo-mysql mariadb -uroot calendario_app -e "SELECT COUNT(*) AS cuant
 **En la app:** código `EVT-0001` (ya existe), título `Repetido`, fecha `2026-12-20`, hora `09:00` → **Guardar**. Aparece el diálogo "El registro ya existe." y no se agrega fila.
 
 ```bash
-docker exec poo-mysql mariadb -uroot calendario_app -e "SELECT COUNT(*) AS cuantos FROM evento WHERE codigo_evento = 'EVT-0001';"
+docker exec calendario-mysql mariadb -uroot calendario_app -e "SELECT COUNT(*) AS cuantos FROM evento WHERE codigo_evento = 'EVT-0001';"
 ```
 **Esperado:** `cuantos = 1`: la restricción `UNIQUE` impidió el duplicado (error 1062).
 
