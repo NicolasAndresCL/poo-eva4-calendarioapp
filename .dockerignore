@@ -1,0 +1,4 @@
+# El build solo necesita docker/ (lo demás se monta como volumen al correr).
+# Lista blanca: todo fuera, salvo lo que se nombra.
+*
+!docker/

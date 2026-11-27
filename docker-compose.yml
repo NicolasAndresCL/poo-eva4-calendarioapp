@@ -1,27 +1,58 @@
-# Base de datos de CalendarioApp para el equipo, sin instalar XAMPP.
+# Entorno completo de CalendarioApp para el equipo, sin instalar nada más
+# que Docker Desktop: NetBeans 31 + JDK 21 en el navegador, MariaDB y phpMyAdmin.
 #
-# - mysql:      MariaDB 10.6 en localhost:3306, usuario root SIN clave (como XAMPP),
-#               que es lo que espera conexion/Conexion.java. La primera vez carga
-#               sola sql/calendario_bd.sql.
+#   Primera vez:   docker compose up -d --build     (10-20 min: baja NetBeans)
+#   Día a día:     docker compose up -d
+#   Apagar:        docker compose down              (NUNCA "down -v": borra la base)
+#
+# - netbeans:   escritorio con NetBeans en http://localhost:3000. Este repo se
+#               monta en /config/workspace: el proyecto se abre en NetBeans como
+#               /config/workspace/CalendarioApp y lo que se edita queda en Windows.
+# - mysql:      MariaDB 10.6, root SIN clave (como XAMPP). Comparte la red de
+#               "netbeans" (network_mode), así para el programa la base está en
+#               localhost:3306, igual que en Conexion.java. Carga sola
+#               sql/calendario_bd.sql la PRIMERA vez (volumen vacío).
 # - phpmyadmin: panel web en http://localhost:8081 (entra directo como root).
 #
-# Entorno de clase: root sin clave solo es aceptable porque los puertos
-# escuchan únicamente en 127.0.0.1 (no se ven desde otros equipos de la red).
+# Entorno de clase: root sin clave solo es aceptable porque los puertos escuchan
+# únicamente en 127.0.0.1 (no se ven desde otros equipos de la red).
 services:
+  netbeans:
+    build: .
+    image: calendario-netbeans:local
+    container_name: calendario-netbeans
+    environment:
+      PUID: "1000"
+      PGID: "1000"
+      TZ: "America/Santiago"
+    volumes:
+      - ./:/config/workspace
+      - netbeans_config:/config
+    ports:
+      - "127.0.0.1:3000:3000"   # escritorio con NetBeans (http)
+      - "127.0.0.1:3306:3306"   # MariaDB, para herramientas de Windows (la base vive en esta red)
+    shm_size: "1gb"
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:3000"]
+      interval: 30s
+      timeout: 5s
+      start_period: 60s
+      retries: 3
+    restart: unless-stopped
+
   mysql:
     image: mariadb:10.6
     container_name: calendario-mysql
+    # Usa la interfaz de red de "netbeans": localhost dentro del IDE = esta base.
+    network_mode: "service:netbeans"
     environment:
       MARIADB_ALLOW_EMPTY_ROOT_PASSWORD: "1"
       TZ: "America/Santiago"
     command:
       - --character-set-server=utf8mb4
       - --collation-server=utf8mb4_general_ci
-    ports:
-      - "127.0.0.1:3306:3306"
     volumes:
-      - calendario_data:/var/lib/mysql
-      # Solo corre con el volumen vacío (primer arranque).
+      - mysql_data:/var/lib/mysql
       - ./sql/calendario_bd.sql:/docker-entrypoint-initdb.d/01-calendario.sql:ro
     healthcheck:
       test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
@@ -29,6 +60,7 @@ services:
       timeout: 5s
       start_period: 30s
       retries: 5
+    restart: unless-stopped
 
   phpmyadmin:
     image: phpmyadmin:5.2
@@ -37,13 +69,17 @@ services:
       mysql:
         condition: service_healthy
     environment:
-      PMA_HOST: mysql
+      # La base escucha dentro del contenedor "netbeans" (red compartida).
+      PMA_HOST: netbeans
+      PMA_PORT: "3306"
       PMA_USER: root
       PMA_PASSWORD: ""
     volumes:
       - ./docker/phpmyadmin-sin-clave.php:/etc/phpmyadmin/config.user.inc.php:ro
     ports:
       - "127.0.0.1:8081:80"
+    restart: unless-stopped
 
 volumes:
-  calendario_data:
+  netbeans_config:
+  mysql_data:
