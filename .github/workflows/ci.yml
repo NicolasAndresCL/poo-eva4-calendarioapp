@@ -37,7 +37,7 @@ jobs:
         run: sudo apt-get update -qq && sudo apt-get install -y -qq ant ant-optional
 
       - name: Cache de JUnit 4
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: .ci-libs
           key: junit-4.13.2-hamcrest-1.3
